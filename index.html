@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onregelmatige Engelse Werkwoorden (Mavo 2)</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="icon.png">
+    <meta property="og:image" content="http://yixgames.nl.eu.org/yixboost/p/irregular-verbs/js-version/banner.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Standaard lichte modus */
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        h1 {
+            color: #343a40;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 23px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            background-color: #ffffff;
+            color: #212529;
+            border: 1px solid #ced4da;
+            border-radius: 23px;
+            position: relative;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 8px rgba(0, 140, 255, 0.4);
+            outline: none;
+        }
+
+        /* Plaats de label in het input veld */
+        .form-group {
+            position: relative;
+        }
+
+        label {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #495057;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus ~ label,
+        .form-control:not(:placeholder-shown) ~ label {
+            top: -10px;
+            font-size: 12px;
+            color: #00bcd4;
+        }
+
+        .btn {
+            border-radius: 23px;
+            background-color: #00bcd4;
+            border: none;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            background-color: #0288d1;
+            box-shadow: 0 4px 10px rgba(0, 140, 255, 0.4);
+        }
+
+        .table {
+            color: #212529;
+            background-color: #ffffff;
+        }
+
+        th {
+            background-color: #e9ecef;
+        }
+
+        td, th {
+            border: 1px solid #dee2e6;
+        }
+
+        .correct {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        input[type="text"].correct {
+            background-color: #2e7d32;
+            color: #ffffff;
+        }
+
+        input[type="text"].incorrect {
+            background-color: #c62828;
+            color: #ffffff;
+        }
+
+        /* Print styling */
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+
+            .container {
+                background-color: white;
+                box-shadow: none;
+            }
+
+            input[type="text"] {
+                background-color: white;
+            }
+
+            #checkAnswers {
+                display: none;
+            }
+        }
+
+        .result-card {
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .result-card.red {
+            background-color: #f44336;
+        }
+
+        .result-card.green {
+            background-color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1><strong>🇬🇧 Irregular Verbs (Mavo 2)</strong></h1>
+    <form id="form">
+        <div class="row">
+            <div class="col-md-4 form-group">
+                <input type="number" class="form-control" id="vanRij" min="1" value="1" placeholder="Van rij">
+            </div>
+            <div class="col-md-4 form-group">
+                <input type="number" class="form-control" id="totRij" min="1" value="79" placeholder="Tot rij">
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-primary" id="showExercise">
+                    <i class="fas fa-play"></i> Oefening
+                </button>
+                <button type="button" class="btn btn-primary" id="showWorksheet">
+                    <i class="fas fa-file-alt"></i> Blad
+                </button>
+                <button type="button" class="btn btn-primary" id="oefentoets">
+                    <i class="fas fa-edit"></i> Toets
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="printTable()">
+                    <i class="fas fa-print"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+    <br>
+    <hr>
+    <div id="tableContainer">
+        <!-- Table will be inserted here -->
+    </div>
+    <div id="resultContainer" style="display: none;">
+        <div class="result-card" id="percentageCard"></div>
+        <div class="result-card" id="gradeCard"></div>
+    </div>
+    <br>
+    <hr>
+     <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://clvlearn.github.io/irregular-verbs/">Irregular Verbs Excercise</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://github.com/jonasvanleeuwen19">Yixboost NL</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-ND 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1" alt=""></a></p> 
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script>
+let rows = [];
+let currentRows = [];
+
+// Fetch CSV data
+async function loadCSV() {
+    const response = await fetch('list.csv'); // Zorg ervoor dat het CSV-bestand in dezelfde directory staat
+    const data = await response.text();
+    const parsedRows = data.trim().split('\n').slice(1).map(row => row.split(','));
+    rows = parsedRows;
+}
+
+// Function to show rows
+function displayRows(filteredRows, isExercise) {
+    let tableHTML = '<table class="table table-striped"><thead><tr><th>Infinitief</th><th>Verleden Tijd</th><th>Verleden Deelwoord</th><th>Nederlandse Vertaling</th></tr></thead><tbody>';
+
+    filteredRows.forEach((row, index) => {
+        let missingIndex = isExercise ? Math.floor(Math.random() * 4) : -1;
+        tableHTML += '<tr>';
+        row.forEach((cell, i) => {
+            if (missingIndex === i) {
+                tableHTML += `<td><input type="text" class="form-control" data-row="${index}" data-col="${i}" name="input[${index}][${i}]"></td>`;
+            } else {
+                tableHTML += `<td>${cell}</td>`;
+            }
+        });
+        tableHTML += '</tr>';
+    });
+
+    tableHTML += '</tbody></table>';
+    
+    if (isExercise) {
+        tableHTML += '<button type="button" class="btn btn-primary" id="checkAnswers"><i class="fas fa-check"></i> Controleer</button>';
+    }
+
+    document.getElementById('tableContainer').innerHTML = tableHTML;
+
+    if (isExercise) {
+        document.getElementById('checkAnswers').addEventListener('click', function () {
+            checkAnswers(filteredRows);
+        });
+    }
+}
+
+// Show specific rows based on user input
+document.getElementById('showExercise').addEventListener('click', function () {
+    const vanRij = parseInt(document.getElementById('vanRij').value) - 1;
+    const totRij = parseInt(document.getElementById('totRij').value);
+    currentRows = rows.slice(vanRij, totRij);
+    displayRows(currentRows, true);
+});
+
+// Show worksheet (no input fields)
+document.getElementById('showWorksheet').addEventListener('click', function () {
+    const vanRij = parseInt(document.getElementById('vanRij').value) - 1;
+    const totRij = parseInt(document.getElementById('totRij').value);
+    displayRows(rows.slice(vanRij, totRij), false);
+});
+
+document.getElementById('oefentoets').addEventListener('click', function () {
+    const vanRij = parseInt(document.getElementById('vanRij').value) - 1; // -1 omdat de index op 0 gebaseerd is
+    const totRij = parseInt(document.getElementById('totRij').value);
+    
+    // Zorg ervoor dat vanRij en totRij binnen het bereik van rows vallen
+    if (vanRij < 0 || vanRij >= rows.length || totRij < vanRij) {
+        alert('Ongeldige rijinstellingen. Zorg ervoor dat de waarden binnen het bereik van de gegevens vallen.');
+        return;
+    }
+    
+    // Als totRij groter is dan het aantal beschikbare rijen, stel het in op het maximale aantal rijen
+    const effectiveTotRij = Math.min(totRij, rows.length);
+    
+    // Filter de rijen op basis van het opgegeven bereik
+    const filteredRows = rows.slice(vanRij, effectiveTotRij);
+    
+    // Schud de gefilterde rijen en kies maximaal 30 rijen
+    const shuffledRows = filteredRows.sort(() => 0.5 - Math.random()).slice(0, 30);
+    
+    // Toon de geselecteerde rijen
+    displayRows(shuffledRows, true);
+});
+
+
+
+// Check answers
+function checkAnswers(filteredRows) {
+    const inputs = document.querySelectorAll('#tableContainer input');
+    let correctCount = 0;
+    let totalCount = inputs.length;
+
+    inputs.forEach((input) => {
+        const rowIndex = parseInt(input.getAttribute('data-row'));
+        const colIndex = parseInt(input.getAttribute('data-col'));
+        const correctAnswer = filteredRows[rowIndex][colIndex];
+
+        if (input.value.toLowerCase().trim() === correctAnswer.toLowerCase().trim()) {
+            input.classList.add('correct');
+            correctCount++;
+        } else {
+            input.classList.add('incorrect');
+            input.value += ` (correct: ${correctAnswer})`;
+        }
+    });
+
+    let percentage = (correctCount / totalCount) * 100;
+    let grade = calculateGrade(percentage);
+    displayResults(percentage, grade);
+
+    if (correctCount === totalCount) {
+        showConfetti();
+    }
+}
+
+// Calculate grade based on percentage
+function calculateGrade(percentage) {
+    if (percentage === 0) return 1; // Alles fout
+    if (percentage === 100) return 10; // Alles correct
+
+    if (percentage >= 75) {
+        // Lineaire schaal van 6 naar 10
+        return 6 + (percentage - 75) / 25 * 4;
+    } else if (percentage >= 50) {
+        // Lineaire schaal van 5 naar net onder 6
+        return 5 + (percentage - 50) / 25 * 1;
+    } else {
+        // Lineaire schaal van 1 naar 5
+        return 1 + (percentage / 50) * 4;
+    }
+}
+
+// Display results
+function displayResults(percentage, grade) {
+    document.getElementById('percentageCard').innerHTML = `Percentage goed: ${percentage.toFixed(2)}%`;
+    const gradeCard = document.getElementById('gradeCard');
+    gradeCard.innerHTML = `Cijfer: ${grade.toFixed(1)}`;
+    
+    // Reset previous colors
+    gradeCard.classList.remove('red', 'green');
+    
+    if (grade < 6.0) {
+        gradeCard.classList.add('red');
+    } else {
+        gradeCard.classList.add('green');
+    }
+    document.getElementById('resultContainer').style.display = 'block';
+}
+
+// Show confetti animation
+function showConfetti() {
+    var duration = 15 * 1000;
+    var animationEnd = Date.now() + duration;
+    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    var interval = setInterval(function() {
+        var timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+            return clearInterval(interval);
+        }
+
+        var particleCount = 50 * (timeLeft / duration);
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+    }, 250);
+}
+function printTable() {
+    // Verberg de 'Controleer' knop tijdelijk
+    const checkAnswersButton = document.getElementById('checkAnswers');
+    if (checkAnswersButton) {
+        checkAnswersButton.style.display = 'none';
+    }
+
+    // Open een nieuw venster voor de afdruk
+    const printWindow = window.open('', '', 'height=600,width=800');
+    const tableHTML = document.getElementById('tableContainer').innerHTML;
+    
+    // Schrijf de HTML voor het printen
+    printWindow.document.write('<html><head><title>Print</title>');
+    printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">');
+    printWindow.document.write('<style>');
+    printWindow.document.write('body { background-color: white; color: black; margin: 0; padding: 0; }');
+    printWindow.document.write('.table { color: #212529; background-color: #ffffff; width: 100%; border-collapse: collapse; }');
+    printWindow.document.write('th { background-color: #e9ecef; }');
+    printWindow.document.write('td, th { border: 1px solid #dee2e6; }');
+    printWindow.document.write('input[type="text"] { background-color: white; color: #212529; }');
+    printWindow.document.write('@media print {');
+    printWindow.document.write('body { margin: 0; padding: 0; }');
+    printWindow.document.write('header, footer, .no-print { display: none; }');
+    printWindow.document.write('}'); // Print-specifieke CSS
+    printWindow.document.write('</style></head><body>');
+    printWindow.document.write(tableHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus(); // Zorg ervoor dat het printvenster gefocust is
+    printWindow.print();
+
+    // Zet de knop weer zichtbaar na het printen
+    if (checkAnswersButton) {
+        checkAnswersButton.style.display = 'block';
+    }
+}
+
+// Load CSV and initialize
+loadCSV();
+
+</script>
+</body>
+</html>
