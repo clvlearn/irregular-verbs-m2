@@ -202,7 +202,7 @@ let currentRows = [];
 
 // Fetch CSV data
 async function loadCSV() {
-    const response = await fetch('list.csv'); // Zorg ervoor dat het CSV-bestand in dezelfde directory staat
+    const response = await fetch('/data/English/Grammar/irregular_verbs_m2.csv'); // Zorg ervoor dat het CSV-bestand in dezelfde directory staat
     const data = await response.text();
     const parsedRows = data.trim().split('\n').slice(1).map(row => row.split(','));
     rows = parsedRows;
